@@ -3,14 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Web", "MyApp.Web\MyApp.Web.csproj", "{E7DB6C5A-2A74-45EC-A0BC-BF8C6A0D8640}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyApp.Web", "MyApp.Web\MyApp.Web.csproj", "{E7DB6C5A-2A74-45EC-A0BC-BF8C6A0D8640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Common", "MyApp.Common\MyApp.Common.csproj", "{2E7150FF-08C1-4564-8438-9DD95F47A68D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyApp.Common", "MyApp.Common\MyApp.Common.csproj", "{2E7150FF-08C1-4564-8438-9DD95F47A68D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C0466115-9E3E-44DD-AFA1-33AE2164C16B}"
 	ProjectSection(SolutionItems) = preProject
 		..\readme.md = ..\readme.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Common.Test", "MyApp.Common.Test\MyApp.Common.Test.csproj", "{CF2B76AD-D39C-4598-B967-77B0072C9EC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{2E7150FF-08C1-4564-8438-9DD95F47A68D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E7150FF-08C1-4564-8438-9DD95F47A68D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E7150FF-08C1-4564-8438-9DD95F47A68D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF2B76AD-D39C-4598-B967-77B0072C9EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF2B76AD-D39C-4598-B967-77B0072C9EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF2B76AD-D39C-4598-B967-77B0072C9EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF2B76AD-D39C-4598-B967-77B0072C9EC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
