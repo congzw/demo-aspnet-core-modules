@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -17,8 +18,10 @@ namespace MyApp.Common.Modules.Impl
                 throw new ArgumentNullException(nameof(moduleAssemblies));
             }
 
+            var assemblies = moduleAssemblies.ToList();
+
             var startupInterfaceType = typeof(IModuleStartup);
-            var startupTypes = moduleAssemblies.SelectMany(x => x.ExportedTypes.Where(t => startupInterfaceType.IsAssignableFrom(t)))
+            var startupTypes = assemblies.SelectMany(x => x.ExportedTypes.Where(t => startupInterfaceType.IsAssignableFrom(t)))
                 .Where(t => !t.IsAbstract && !t.IsInterface).ToList();
 
             foreach (var startupType in startupTypes)
@@ -32,11 +35,7 @@ namespace MyApp.Common.Modules.Impl
         {
             if (string.IsNullOrWhiteSpace(modulePrefix))
             {
-                var ns = typeof(ModuleStartupHelper).Namespace;
-                if (ns != null)
-                {
-                    modulePrefix = ns.Split(".").FirstOrDefault();
-                }
+                modulePrefix = TryGetPrefix();
             }
 
             if (string.IsNullOrWhiteSpace(modulePrefix))
@@ -44,8 +43,8 @@ namespace MyApp.Common.Modules.Impl
                 throw new ArgumentNullException(nameof(modulePrefix));
             }
 
-
             var allLib = DependencyContext.Default.CompileLibraries;
+            //var allLib = DependencyContext.Default.RuntimeLibraries;
             var libs = allLib.Where(x => x.Name.StartsWith(modulePrefix, StringComparison.OrdinalIgnoreCase));
             var assemblies = libs.Select(lib =>
                 {
@@ -58,8 +57,26 @@ namespace MyApp.Common.Modules.Impl
                         return null;
                     }
                 }
-            ).Where(x => x != null);
+            ).Where(x => x != null).ToList();
+
+            //todo figure out why?
+            //var demoDllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MyApp.Module.Demos.dll");
+            //var demoDll = Assembly.LoadFile(demoDllPath);
+            //assemblies.Add(demoDll);
+
             return assemblies;
+        }
+
+        private static string TryGetPrefix()
+        {
+            var ns = typeof(ModuleStartupHelper).Namespace;
+            if (ns != null)
+            {
+                var modulePrefix = ns.Split(".").FirstOrDefault();
+                return modulePrefix;
+            }
+            //read from config, todo
+            return "";
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using MyApp.Common.Modules.Extensions;
 
 namespace MyApp.Web
 {
@@ -32,23 +33,6 @@ namespace MyApp.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            ////or
-            ////fix => https://github.com/dotnet/AspNetCore/issues/7772
-            ////services.AddMvc(options =>
-            ////        options.EnableEndpointRouting = false)
-            ////    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapAreaRoute(
-            //        name: "areas_default",
-            //        areaName: "Default",
-            //        template: "Default/{controller=Home}/{action=Index}/{id?}");
-
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller=Home}/{action=Index}/{id?}");
-            //});
         }
     }
 }
