@@ -12,6 +12,13 @@ namespace MyApp.Web
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
+            ////todo figure out why default not find dynamic dll?
+            //var demoDllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MyApp.Module.Demos.dll");
+            //var demoDll = Assembly.LoadFile(demoDllPath);
+            //var assemblies = ModuleAssemblyHelper.GetAssemblies().ToList();
+            //assemblies.Add(demoDll);
+            //ModuleAssemblyHelper.GetAssemblies = () => assemblies;
+
             //services.AddMyModules();
         }
 

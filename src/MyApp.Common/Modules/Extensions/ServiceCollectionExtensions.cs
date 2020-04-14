@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using MyApp.Common.Modules.Impl;
 
@@ -13,22 +15,22 @@ namespace MyApp.Common.Modules.Extensions
             {
                 throw new ArgumentNullException(nameof(services));
             }
-            
-            var context = services.LastOrDefault(d => d.ServiceType == typeof(IModuleServiceContext))?.ImplementationInstance as IModuleServiceContext;
+            var contextInterfaceType = typeof(IModuleServiceContext);
+            var context = services.LastOrDefault(d => d.ServiceType == contextInterfaceType)?.ImplementationInstance as IModuleServiceContext;
             if (context == null)
             {
                 context = new ModuleServiceContext()
                 {
                     ApplicationServices = services
                 };
-                services.AddSingleton(serviceProvider => context);
+
+                var contextDefaultImplType = context.GetType();
+                services.AddSingleton(contextDefaultImplType, context);
+                services.AddSingleton(contextInterfaceType, sp => sp.GetService(contextDefaultImplType));
             }
 
-            if (context.Assemblies == null)
-            {
-                context.Assemblies = ModuleStartupHelper.GetModuleAssemblies().ToList();
-            }
-            ModuleStartupHelper.AddAllModuleStartup(services, context.Assemblies);
+            var assemblies = ModuleAssemblyHelper.GetAssemblies().ToList();
+            services.AddAllModuleStartup(assemblies);
             
             configure?.Invoke(context);
 
@@ -40,6 +42,24 @@ namespace MyApp.Common.Modules.Extensions
                 startup.ConfigureServices(services);
             }
             return context;
+        }
+        
+        private static void AddAllModuleStartup(this IServiceCollection services, IList<Assembly> moduleAssemblies)
+        {
+            if (moduleAssemblies == null)
+            {
+                throw new ArgumentNullException(nameof(moduleAssemblies));
+            }
+            
+            var startupInterfaceType = typeof(IModuleStartup);
+            var startupTypes = moduleAssemblies.SelectMany(x => x.ExportedTypes.Where(t => startupInterfaceType.IsAssignableFrom(t)))
+                .Where(t => !t.IsAbstract && !t.IsInterface).ToList();
+
+            foreach (var startupType in startupTypes)
+            {
+                services.AddSingleton(startupType);
+                services.AddSingleton(startupInterfaceType, sp => sp.GetService(startupType));
+            }
         }
     }
 }

@@ -1,37 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
+using MyApp.Common.Modules.Impl;
 
-namespace MyApp.Common.Modules.Impl
+namespace MyApp.Common.Modules
 {
-    internal class ModuleStartupHelper
+    public static class ModuleAssemblyHelper
     {
-        public static void AddAllModuleStartup(IServiceCollection services, IEnumerable<Assembly> moduleAssemblies)
+        static ModuleAssemblyHelper()
         {
-            if (moduleAssemblies == null)
-            {
-                throw new ArgumentNullException(nameof(moduleAssemblies));
-            }
-
-            var assemblies = moduleAssemblies.ToList();
-
-            var startupInterfaceType = typeof(IModuleStartup);
-            var startupTypes = assemblies.SelectMany(x => x.ExportedTypes.Where(t => startupInterfaceType.IsAssignableFrom(t)))
-                .Where(t => !t.IsAbstract && !t.IsInterface).ToList();
-
-            foreach (var startupType in startupTypes)
-            {
-                services.AddSingleton(startupType);
-                services.AddSingleton(startupInterfaceType, sp => sp.GetService(startupType));
-            }
+            GetAssemblies = () => GetModuleAssemblies(null);
         }
 
-        public static IEnumerable<Assembly> GetModuleAssemblies(string modulePrefix = null)
+        public static Func<IEnumerable<Assembly>> GetAssemblies { get; set; }
+        
+        private static IEnumerable<Assembly> GetModuleAssemblies(string modulePrefix = null)
         {
             if (string.IsNullOrWhiteSpace(modulePrefix))
             {
@@ -66,16 +52,15 @@ namespace MyApp.Common.Modules.Impl
 
             return assemblies;
         }
-
         private static string TryGetPrefix()
         {
-            var ns = typeof(ModuleStartupHelper).Namespace;
+            var ns = typeof(ModuleServiceContext).Namespace;
             if (ns != null)
             {
                 var modulePrefix = ns.Split(".").FirstOrDefault();
                 return modulePrefix;
             }
-            //read from config, todo
+            //todo: read from config?
             return "";
         }
     }
