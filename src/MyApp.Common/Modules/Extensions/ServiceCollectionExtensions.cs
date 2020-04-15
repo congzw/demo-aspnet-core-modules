@@ -9,12 +9,13 @@ namespace MyApp.Common.Modules.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IModuleServiceContext AddMyModules(this IServiceCollection services, Action<IModuleServiceContext> configure = null)
+        public static IModuleServiceContext AddMyModules(this IServiceCollection services, IList<Assembly> assemblies = null, Action<IModuleServiceContext> configure = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
             var contextInterfaceType = typeof(IModuleServiceContext);
             var context = services.LastOrDefault(d => d.ServiceType == contextInterfaceType)?.ImplementationInstance as IModuleServiceContext;
             if (context == null)
@@ -28,8 +29,15 @@ namespace MyApp.Common.Modules.Extensions
                 services.AddSingleton(contextDefaultImplType, context);
                 services.AddSingleton(contextInterfaceType, sp => sp.GetService(contextDefaultImplType));
             }
-
-            var assemblies = ModuleAssemblyHelper.GetAssemblies().ToList();
+            
+            if (assemblies == null)
+            {
+                assemblies = MyModuleHelper.Instance.GetAssemblies();
+            }
+            else
+            {
+                MyModuleHelper.Instance.GetAssemblies = () => assemblies;
+            }
             services.AddAllModuleStartup(assemblies);
             
             configure?.Invoke(context);
@@ -44,6 +52,12 @@ namespace MyApp.Common.Modules.Extensions
             return context;
         }
         
+        public static IMvcBuilder AddMyModulePart(this IMvcBuilder mvcBuilder)
+        {
+            MyModuleHelper.Instance.AddApplicationPart(mvcBuilder);
+            return mvcBuilder;
+        }
+
         private static void AddAllModuleStartup(this IServiceCollection services, IList<Assembly> moduleAssemblies)
         {
             if (moduleAssemblies == null)

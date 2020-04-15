@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyApp.Common.Modules.Extensions;
@@ -19,7 +22,7 @@ namespace MyApp.Common.Modules
         public static void ModuleStartupInitialize(TestContext testContext)
         {
             services = new ServiceCollection();
-            services.AddMyModules();
+            services.AddMyModules(new[]{ typeof(ModuleStartupSpec).Assembly });
             rootProvider = services.BuildServiceProvider();
             builder = new ApplicationBuilder(rootProvider);
             builder.Build();
