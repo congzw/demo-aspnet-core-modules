@@ -36,6 +36,8 @@ namespace MyApp.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             //add[Area("Default")] in controllers of area
             app.UseMvc(routes =>
             {
